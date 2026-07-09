@@ -1,0 +1,70 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>Quotes</title>
+</head>
+<body>
+    <h1>Quotes</h1>
+
+    <nav>
+    {% if user.is_authenticated %}
+    <p>Hello, {{ user.username }}!</p>
+    <a href="{% url 'quotes:add_author' %}">Add Author</a> |
+    <a href="{% url 'quotes:add_quote' %}">Add Quote</a> |
+    <a href="{% url 'quotes:scrape_data' %}">Scrape Quotes</a> |
+    <a href="{% url 'users:logout' %}">Logout</a>
+{% else %}
+        <a href="{% url 'users:signup' %}">Register</a> |
+        <a href="{% url 'users:login' %}">Login</a>
+    {% endif %}
+</nav>
+
+    <h3>Top Ten Tags</h3>
+
+{% for tag in top_tags %}
+    <a href="{% url 'quotes:quotes_by_tag' tag.name %}">
+        {{ tag.name }}
+    </a>
+{% empty %}
+    <p>No tags yet.</p>
+{% endfor %}
+
+<hr>
+
+    {% for quote in quotes %}
+    <div>
+        <p>"{{ quote.text }}"</p>
+        <p>
+    by <a href="{% url 'quotes:author_detail' quote.author.id %}">
+        {{ quote.author.fullname }}
+    </a>
+</p>
+
+        {% for tag in quote.tags.all %}
+    <a href="{% url 'quotes:quotes_by_tag' tag.name %}">
+        {{ tag.name }}
+    </a>
+{% endfor %}
+    </div>
+    <hr>
+{% empty %}
+    <p>No quotes yet.</p>
+{% endfor %}
+
+<div>
+    {% if quotes.has_previous %}
+        <a href="?page={{ quotes.previous_page_number }}">previous</a>
+    {% endif %}
+
+    <span>
+        Page {{ quotes.number }} of {{ quotes.paginator.num_pages }}
+    </span>
+
+    {% if quotes.has_next %}
+        <a href="?page={{ quotes.next_page_number }}">next</a>
+    {% endif %}
+</div>
+
+</body>
+</html>

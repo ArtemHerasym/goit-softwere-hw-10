@@ -1,0 +1,9 @@
+<h1>Add Quote</h1>
+
+<form method="post">
+    {% csrf_token %}
+    {{ form.as_p }}
+    <button type="submit">Save Quote</button>
+</form>
+
+<a href="{% url 'quotes:index' %}">Back</a>

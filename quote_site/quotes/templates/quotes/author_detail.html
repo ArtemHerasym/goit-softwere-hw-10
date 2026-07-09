@@ -1,0 +1,16 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{{ author.fullname }}</title>
+</head>
+<body>
+    <h1>{{ author.fullname }}</h1>
+
+    <p><strong>Born:</strong> {{ author.born_date }}</p>
+    <p><strong>Location:</strong> {{ author.born_location }}</p>
+    <p>{{ author.description }}</p>
+
+    <a href="{% url 'quotes:index' %}">Back to quotes</a>
+</body>
+</html>

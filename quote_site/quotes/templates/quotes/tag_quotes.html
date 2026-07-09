@@ -1,0 +1,13 @@
+<h1>Quotes tagged: {{ tag.name }}</h1>
+
+{% for quote in quotes %}
+    <div>
+        <p>"{{ quote.text }}"</p>
+        <p>by {{ quote.author.fullname }}</p>
+    </div>
+    <hr>
+{% empty %}
+    <p>No quotes with this tag.</p>
+{% endfor %}
+
+<a href="{% url 'quotes:index' %}">Back to all quotes</a>
