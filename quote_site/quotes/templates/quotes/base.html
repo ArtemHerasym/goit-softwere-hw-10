@@ -1,0 +1,46 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quotes{% endblock %}</title>
+    <link rel="stylesheet" href="{% static 'quotes/styles.css' %}">
+</head>
+<body>
+    <div class="site-shell">
+        <header class="site-header">
+            <div class="brand-block">
+                <a class="brand-link" href="{% url 'quotes:index' %}">Quotes</a>
+                <p class="brand-subtitle">Authors, tags, and memorable lines.</p>
+            </div>
+
+            <nav class="site-nav" aria-label="Primary navigation">
+                <a class="nav-button" href="{% url 'quotes:index' %}">Home</a>
+                {% if user.is_authenticated %}
+                    <span class="nav-user">Hello, {{ user.username }}</span>
+                    <a class="nav-button" href="{% url 'quotes:add_author' %}">Add Author</a>
+                    <a class="nav-button" href="{% url 'quotes:add_quote' %}">Add Quote</a>
+                    <a class="nav-button" href="{% url 'quotes:scrape_data' %}">Scrape Quotes</a>
+                    <a class="nav-button nav-button-dark" href="{% url 'users:logout' %}">Logout</a>
+                {% else %}
+                    <a class="nav-button" href="{% url 'users:signup' %}">Register</a>
+                    <a class="nav-button nav-button-dark" href="{% url 'users:login' %}">Login</a>
+                {% endif %}
+            </nav>
+        </header>
+
+        {% if messages %}
+            <div class="flash-stack">
+                {% for message in messages %}
+                    <div class="flash-message">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+
+        <main class="page-main">
+            {% block content %}{% endblock %}
+        </main>
+    </div>
+</body>
+</html>

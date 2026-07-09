@@ -1,37 +1,53 @@
-from .models import Quote, Author, Tag
-from django.shortcuts import render, get_object_or_404, redirect
-from django.contrib.auth.decorators import login_required
-from .forms import AuthorForm, QuoteForm
-from django.db.models import Count
-from django.core.paginator import Paginator
 from django.contrib import messages
+from django.contrib.auth.decorators import login_required
+from django.core.paginator import Paginator
+from django.db.models import Count
+from django.shortcuts import get_object_or_404, redirect, render
+
+from .forms import AuthorForm, QuoteForm
+from .models import Author, Quote, Tag
 from .services.scraper import scrape_quotes
 
+
 def index(request):
-    quotes_list = Quote.objects.all()
+    quotes_list = Quote.objects.select_related("author").prefetch_related("tags").order_by("id")
     paginator = Paginator(quotes_list, 10)
 
     page_number = request.GET.get("page")
     quotes = paginator.get_page(page_number)
 
-    top_tags = Tag.objects.annotate(num_quotes=Count("quote")).order_by("-num_quotes")[:10]
+    top_tags = (
+        Tag.objects.annotate(num_quotes=Count("quote", distinct=True))
+        .order_by("-num_quotes", "name")[:10]
+    )
 
-    return render(request, "quotes/index.html", {
-        "quotes": quotes,
-        "top_tags": top_tags,
-    })
+    return render(
+        request,
+        "quotes/index.html",
+        {
+            "quotes": quotes,
+            "top_tags": top_tags,
+        },
+    )
+
 
 def author_detail(request, author_id):
     author = get_object_or_404(Author, pk=author_id)
     return render(request, "quotes/author_detail.html", {"author": author})
 
+
 def quotes_by_tag(request, tag_name):
     tag = get_object_or_404(Tag, name=tag_name)
-    quotes = Quote.objects.filter(tags=tag)
-    return render(request, "quotes/tag_quotes.html", {
-        "tag": tag,
-        "quotes": quotes,
-    })
+    quotes = Quote.objects.filter(tags=tag).select_related("author").prefetch_related("tags").order_by("id")
+    return render(
+        request,
+        "quotes/tag_quotes.html",
+        {
+            "tag": tag,
+            "quotes": quotes,
+        },
+    )
+
 
 @login_required
 def add_author(request):
@@ -45,6 +61,7 @@ def add_author(request):
 
     return render(request, "quotes/add_author.html", {"form": form})
 
+
 @login_required
 def add_quote(request):
     if request.method == "POST":
@@ -56,6 +73,7 @@ def add_quote(request):
         form = QuoteForm()
 
     return render(request, "quotes/add_quote.html", {"form": form})
+
 
 @login_required
 def scrape_data(request):

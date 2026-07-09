@@ -1,11 +1,21 @@
-<h1>Sign Up</h1>
+{% extends "quotes/base.html" %}
 
-<form method="post">
-    {% csrf_token %}
+{% block title %}Register{% endblock %}
 
-    {{ form.as_p }}
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">Create Account</h1>
+        <p class="page-subtitle">Register to manage authors, quotes, and imports.</p>
+    </section>
 
-    <button type="submit">Register</button>
-</form>
-
-<a href="{% url 'quotes:index' %}">Back</a>
+    <section class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit">Register</button>
+                <a class="button-link" href="{% url 'quotes:index' %}">Back</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

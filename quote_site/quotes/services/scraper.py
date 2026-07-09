@@ -1,14 +1,18 @@
+from urllib.parse import urljoin
+
 import requests
 from bs4 import BeautifulSoup
 
 from quotes.models import Author, Quote, Tag
+from quotes.utils import normalize_quote_text
 
 
 BASE_URL = "http://quotes.toscrape.com"
 
 
-def scrape_author(author_url):
-    response = requests.get(author_url, timeout=10)
+def scrape_author(session, author_url):
+    response = session.get(author_url, timeout=10)
+    response.encoding = "utf-8"
     response.raise_for_status()
 
     soup = BeautifulSoup(response.text, "html.parser")
@@ -23,19 +27,21 @@ def scrape_author(author_url):
 def scrape_quotes():
     page_url = "/"
     created_quotes = 0
+    session = requests.Session()
 
     while page_url:
-        response = requests.get(BASE_URL + page_url, timeout=10)
+        response = session.get(urljoin(BASE_URL, page_url), timeout=10)
+        response.encoding = "utf-8"
         response.raise_for_status()
 
         soup = BeautifulSoup(response.text, "html.parser")
 
         for quote_block in soup.select(".quote"):
-            quote_text = quote_block.select_one(".text").get_text(strip=True).strip("“”")
+            quote_text = normalize_quote_text(quote_block.select_one(".text").get_text(strip=True))
             author_name = quote_block.select_one(".author").get_text(strip=True)
 
             author_link = quote_block.select_one("a[href^='/author']")["href"]
-            author_data = scrape_author(BASE_URL + author_link)
+            author_data = scrape_author(session, urljoin(BASE_URL, author_link))
 
             author, _ = Author.objects.get_or_create(
                 fullname=author_name,

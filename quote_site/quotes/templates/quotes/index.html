@@ -1,70 +1,61 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>Quotes</title>
-</head>
-<body>
-    <h1>Quotes</h1>
+{% extends "quotes/base.html" %}
 
-    <nav>
-    {% if user.is_authenticated %}
-    <p>Hello, {{ user.username }}!</p>
-    <a href="{% url 'quotes:add_author' %}">Add Author</a> |
-    <a href="{% url 'quotes:add_quote' %}">Add Quote</a> |
-    <a href="{% url 'quotes:scrape_data' %}">Scrape Quotes</a> |
-    <a href="{% url 'users:logout' %}">Logout</a>
-{% else %}
-        <a href="{% url 'users:signup' %}">Register</a> |
-        <a href="{% url 'users:login' %}">Login</a>
-    {% endif %}
-</nav>
+{% block title %}Quotes{% endblock %}
 
-    <h3>Top Ten Tags</h3>
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">Latest quotes</h1>
+        <p class="page-subtitle">Browse the collection, open author pages, and filter by tag.</p>
+    </section>
 
-{% for tag in top_tags %}
-    <a href="{% url 'quotes:quotes_by_tag' tag.name %}">
-        {{ tag.name }}
-    </a>
-{% empty %}
-    <p>No tags yet.</p>
-{% endfor %}
+    <section class="page-layout">
+        <div class="stack">
+            {% for quote in quotes %}
+                <article class="quote-card">
+                    <blockquote class="quote-text">{{ quote.text }}</blockquote>
+                    <p class="quote-meta">
+                        <span>by</span>
+                        <a class="author-link" href="{% url 'quotes:author_detail' quote.author.id %}">{{ quote.author.fullname }}</a>
+                    </p>
 
-<hr>
+                    <div class="tag-list">
+                        {% for tag in quote.tags.all %}
+                            <a class="tag-pill" href="{% url 'quotes:quotes_by_tag' tag.name %}">{{ tag.name }}</a>
+                        {% empty %}
+                            <span class="muted-text">No tags</span>
+                        {% endfor %}
+                    </div>
+                </article>
+            {% empty %}
+                <div class="quote-card">
+                    <p class="empty-state">No quotes yet.</p>
+                </div>
+            {% endfor %}
 
-    {% for quote in quotes %}
-    <div>
-        <p>"{{ quote.text }}"</p>
-        <p>
-    by <a href="{% url 'quotes:author_detail' quote.author.id %}">
-        {{ quote.author.fullname }}
-    </a>
-</p>
+            <div class="pagination">
+                {% if quotes.has_previous %}
+                    <a class="pagination-link" href="?page={{ quotes.previous_page_number }}">Previous</a>
+                {% endif %}
 
-        {% for tag in quote.tags.all %}
-    <a href="{% url 'quotes:quotes_by_tag' tag.name %}">
-        {{ tag.name }}
-    </a>
-{% endfor %}
-    </div>
-    <hr>
-{% empty %}
-    <p>No quotes yet.</p>
-{% endfor %}
+                <span class="pagination-current">Page {{ quotes.number }} of {{ quotes.paginator.num_pages }}</span>
 
-<div>
-    {% if quotes.has_previous %}
-        <a href="?page={{ quotes.previous_page_number }}">previous</a>
-    {% endif %}
+                {% if quotes.has_next %}
+                    <a class="pagination-link" href="?page={{ quotes.next_page_number }}">Next</a>
+                {% endif %}
+            </div>
+        </div>
 
-    <span>
-        Page {{ quotes.number }} of {{ quotes.paginator.num_pages }}
-    </span>
+        <aside class="sidebar-card">
+            <h2 class="section-title">Top Ten Tags</h2>
+            <p class="section-copy">The most-used tags across the current collection.</p>
 
-    {% if quotes.has_next %}
-        <a href="?page={{ quotes.next_page_number }}">next</a>
-    {% endif %}
-</div>
-
-</body>
-</html>
+            <div class="top-tags-list">
+                {% for tag in top_tags %}
+                    <a class="tag-pill" href="{% url 'quotes:quotes_by_tag' tag.name %}">{{ tag.name }}</a>
+                {% empty %}
+                    <p class="empty-state">No tags yet.</p>
+                {% endfor %}
+            </div>
+        </aside>
+    </section>
+{% endblock %}

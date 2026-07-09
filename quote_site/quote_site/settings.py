@@ -25,7 +25,7 @@ SECRET_KEY = "django-insecure-m_1n^-m3^o19nx5w4g-@w-odk8kzmy41(r6-)=l)_byfnv*grc
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = True
 
-ALLOWED_HOSTS = []
+ALLOWED_HOSTS = ["localhost", "127.0.0.1", "testserver"]
 
 
 # Application definition
@@ -117,3 +117,5 @@ USE_TZ = True
 # https://docs.djangoproject.com/en/6.0/howto/static-files/
 
 STATIC_URL = "static/"
+
+LOGIN_URL = "users:login"

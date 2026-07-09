@@ -1,9 +1,21 @@
-<h1>Login</h1>
+{% extends "quotes/base.html" %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Login</button>
-</form>
+{% block title %}Login{% endblock %}
 
-<a href="{% url 'quotes:index' %}">Back</a>
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">Login</h1>
+        <p class="page-subtitle">Sign in to add authors, add quotes, and run the scraper.</p>
+    </section>
+
+    <section class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit">Login</button>
+                <a class="button-link" href="{% url 'quotes:index' %}">Back</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

@@ -1,9 +1,21 @@
-<h1>Add Author</h1>
+{% extends "quotes/base.html" %}
 
-<form method="post">
-    {% csrf_token %}
-    {{ form.as_p }}
-    <button type="submit">Save Author</button>
-</form>
+{% block title %}Add Author{% endblock %}
 
-<a href="{% url 'quotes:index' %}">Back</a>
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">Add Author</h1>
+        <p class="page-subtitle">Create a new author record for the collection.</p>
+    </section>
+
+    <section class="form-card">
+        <form method="post">
+            {% csrf_token %}
+            {{ form.as_p }}
+            <div class="form-actions">
+                <button type="submit">Save Author</button>
+                <a class="button-link" href="{% url 'quotes:index' %}">Back</a>
+            </div>
+        </form>
+    </section>
+{% endblock %}

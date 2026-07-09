@@ -1,16 +1,27 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <title>{{ author.fullname }}</title>
-</head>
-<body>
-    <h1>{{ author.fullname }}</h1>
+{% extends "quotes/base.html" %}
 
-    <p><strong>Born:</strong> {{ author.born_date }}</p>
-    <p><strong>Location:</strong> {{ author.born_location }}</p>
-    <p>{{ author.description }}</p>
+{% block title %}{{ author.fullname }}{% endblock %}
 
-    <a href="{% url 'quotes:index' %}">Back to quotes</a>
-</body>
-</html>
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">{{ author.fullname }}</h1>
+        <p class="page-subtitle">Birth details and background.</p>
+    </section>
+
+    <section class="detail-card">
+        <div class="detail-grid">
+            <div class="detail-item">
+                <span class="detail-label">Born</span>
+                <span>{{ author.born_date }}</span>
+            </div>
+            <div class="detail-item">
+                <span class="detail-label">Location</span>
+                <span>{{ author.born_location }}</span>
+            </div>
+        </div>
+
+        <p>{{ author.description }}</p>
+
+        <a class="button-link spaced-link" href="{% url 'quotes:index' %}">Back to Quotes</a>
+    </section>
+{% endblock %}

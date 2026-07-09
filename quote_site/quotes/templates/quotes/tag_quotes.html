@@ -1,13 +1,34 @@
-<h1>Quotes tagged: {{ tag.name }}</h1>
+{% extends "quotes/base.html" %}
 
-{% for quote in quotes %}
-    <div>
-        <p>"{{ quote.text }}"</p>
-        <p>by {{ quote.author.fullname }}</p>
-    </div>
-    <hr>
-{% empty %}
-    <p>No quotes with this tag.</p>
-{% endfor %}
+{% block title %}Tag: {{ tag.name }}{% endblock %}
 
-<a href="{% url 'quotes:index' %}">Back to all quotes</a>
+{% block content %}
+    <section class="page-intro">
+        <h1 class="page-title">Tag: {{ tag.name }}</h1>
+        <p class="page-subtitle">Every quote currently linked to this tag.</p>
+    </section>
+
+    <section class="stack">
+        {% for quote in quotes %}
+            <article class="quote-card">
+                <blockquote class="quote-text">{{ quote.text }}</blockquote>
+                <p class="quote-meta">
+                    <span>by</span>
+                    <a class="author-link" href="{% url 'quotes:author_detail' quote.author.id %}">{{ quote.author.fullname }}</a>
+                </p>
+
+                <div class="tag-list">
+                    {% for quote_tag in quote.tags.all %}
+                        <a class="tag-pill" href="{% url 'quotes:quotes_by_tag' quote_tag.name %}">{{ quote_tag.name }}</a>
+                    {% endfor %}
+                </div>
+            </article>
+        {% empty %}
+            <div class="quote-card">
+                <p class="empty-state">No quotes with this tag.</p>
+            </div>
+        {% endfor %}
+
+        <a class="button-link" href="{% url 'quotes:index' %}">Back to All Quotes</a>
+    </section>
+{% endblock %}
